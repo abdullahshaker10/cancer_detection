@@ -24,9 +24,9 @@ class LoginView(auth_views.LoginView):
 
     def get_success_url(self):
         email = self.request.POST.get('username')
-        user = CustomUser.objects.filter(email=email).all()
-        #pdb.set_trace()
-        if user[0].specialty == 'doctor':
+        email = CustomUser.objects.get(email=email)
+
+        if email.specialty == 'doctor':
             return reverse('index')
         else:
             return reverse('deepmodel:UploadModel')

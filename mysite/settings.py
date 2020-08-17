@@ -28,7 +28,7 @@ TEMPLATE_DIR_DEEPMODEL = os.path.join(BASE_DIR, 'deepmodel/templates/deepmodel')
 SECRET_KEY = '8lu*6g0lg)9z!ba+a$ehk)xt)x%rxgb$i1&amp;022shmi1jcgihb*'
 #SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = False
+DEBUG = True
 #DEBUG = int(os.environ.get("DEBUG", default=0))
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.

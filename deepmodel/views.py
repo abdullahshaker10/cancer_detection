@@ -18,6 +18,8 @@ from django.views.generic import CreateView
 from .forms import SlicesForm, SlicesFormdl, DeepModelForm
 from django.urls import reverse_lazy
 from .models import DeepModel
+import pdb
+
 
 class UploadModel(CreateView):
     template_name = 'upload_model.html'
@@ -42,16 +44,16 @@ def get_slice_dl(request, patient_id, slices_num, message):
     path1 = []
     path2 = []
     for slice in range(int(slice_num), int(slices_num)):
-        path1.append(('DICOM/' + str(patient_id) + '/DL/original/' + str(slice) + '.png'))
+        # path1.append(('DICOM/' + str(patient_id) + '/DL/original/' + str(slice) + '.png'))
         path2.append(('DICOM/' + str(patient_id) + '/DL/tumors/' + str(slice) + '.png'))
 
     # pdb.set_trace()
 
-    return render(request, 'slices_dl.html', {'liver_slices': path1,
-                                              'tumor_slices': path2,
-                                              'patient_id': patient_id,
-                                              'sent': message
-                                              })
+    return render(request, 'slices_dl.html', {
+        'tumor_slices': path2,
+        'patient_id': patient_id,
+        'sent': message
+    })
 
 
 def load_scan(patient_id):
@@ -271,14 +273,16 @@ def make_img_proces_folders(patient_id, path):
         processed_path = os.path.join(path, 'image_proces')
         # pdb.set_trace()
         os.mkdir(processed_path + '/' + 'original')
-        os.mkdir(processed_path + '/' + 'croped')
-        os.mkdir(processed_path + '/' + 'enhanced')
-        os.mkdir(processed_path + '/' + 'threshold')
-        os.mkdir(processed_path + '/' + 'eroded')
-        os.mkdir(processed_path + '/' + 'largest_shape')
-        os.mkdir(processed_path + '/' + 'masks')
-        os.mkdir(processed_path + '/' + 'segement')
         os.mkdir(processed_path + '/' + 'tumors')
+
+        # os.mkdir(processed_path + '/' + 'croped')
+        # os.mkdir(processed_path + '/' + 'enhanced')
+        # os.mkdir(processed_path + '/' + 'threshold')
+        # os.mkdir(processed_path + '/' + 'eroded')
+        # os.mkdir(processed_path + '/' + 'largest_shape')
+        # os.mkdir(processed_path + '/' + 'masks')
+        # os.mkdir(processed_path + '/' + 'segement')
+        # os.mkdir(processed_path + '/' + 'tumors')
 
 
 def Examine_img(request, patient_id):
@@ -350,53 +354,52 @@ def strt_img(request, patient_id, slice):
     imgs_to_process = get_pixels_hu(scans)
 
     org = np.uint8(cv2.normalize(image_histogram_equalization(imgs_to_process[slice]), None, 0, 255, cv2.NORM_MINMAX))
-    original = imgs_to_process[slice]
+    original = image_histogram_equalization(imgs_to_process[slice])
     cv2.imwrite(path + '/image_proces/original/' + str(slice) + '.png', original)
 
     croped_image = crop(imgs_to_process[slice])
-    cv2.imwrite(path + '/image_proces/croped/' + str(slice) + '.png', croped_image)
+    # cv2.imwrite(path + '/image_proces/croped/' + str(slice) + '.png', croped_image)
     # pdb.set_trace()
 
     enhanced_image = image_histogram_equalization(croped_image)
-    cv2.imwrite(path + '/image_proces/enhanced/' + str(slice) + '.png', croped_image)
+    # cv2.imwrite(path + '/image_proces/enhanced/' + str(slice) + '.png', croped_image)
 
     threshold_image = threshold(enhanced_image)
-    cv2.imwrite(path + '/image_proces/threshold/' + str(slice) + '.png', threshold_image)
+    # cv2.imwrite(path + '/image_proces/threshold/' + str(slice) + '.png', threshold_image)
 
     eroded_image = erode(threshold_image)
-    cv2.imwrite(path + '/image_proces/eroded/' + str(slice) + '.png', eroded_image)
+    # cv2.imwrite(path + '/image_proces/eroded/' + str(slice) + '.png', eroded_image)
 
     largest_shape = countores(eroded_image)
-    cv2.imwrite(path + '/image_proces/largest_shape/' + str(slice) + '.png', largest_shape)
+    # cv2.imwrite(path + '/image_proces/largest_shape/' + str(slice) + '.png', largest_shape)
 
     src2 = make_mask(largest_shape, imgs_to_process)
-    cv2.imwrite(path + '/image_proces/masks/' + str(slice) + '.png', src2)
+    # cv2.imwrite(path + '/image_proces/masks/' + str(slice) + '.png', src2)
 
     # src2 = np.float64(src2)
     src1 = org
     final = segement_liver(src1, src2)
-    cv2.imwrite(path + '/image_proces/segement/' + str(slice) + '.png', final)
+    # cv2.imwrite(path + '/image_proces/segement/' + str(slice) + '.png', final)
 
-    final = find_tumor(final)
+    # final = find_tumor(final)
     cv2.imwrite(path + '/image_proces/tumors/' + str(slice) + '.png', final)
 
     predicted.append(final)
     patient_id = str(patient_id)
     original = 'DICOM/' + patient_id + '/image_proces/original/' + str(slice) + '.png'
 
-    croped_image = 'DICOM/' + patient_id + '/image_proces/enhanced/' + str(slice) + '.png'
+    # croped_image = 'DICOM/' + patient_id + '/image_proces/enhanced/' + str(slice) + '.png'
     # pdb.set_trace()
-    enhanced_image = 'DICOM/' + patient_id + '/image_proces/enhanced/' + str(slice) + '.png'
-    threshold_image = 'DICOM/' + patient_id + '/image_proces/threshold/' + str(slice) + '.png'
-    eroded_image = 'DICOM/' + patient_id + '/image_proces/eroded/' + str(slice) + '.png'
-    largest_shape = 'DICOM/' + patient_id + '/image_proces/largest_shape/' + str(slice) + '.png'
-    checked = 'DICOM/' + patient_id + '/image_proces/checked_axis/' + str(slice) + '.png'
-    src2 = 'DICOM/' + patient_id + '/image_proces/masks/' + str(slice) + '.png'
-    final = 'DICOM/' + patient_id + '/image_proces/segement/' + str(slice) + '.png'
+    # enhanced_image = 'DICOM/' + patient_id + '/image_proces/enhanced/' + str(slice) + '.png'
+    # threshold_image = 'DICOM/' + patient_id + '/image_proces/threshold/' + str(slice) + '.png'
+    # eroded_image = 'DICOM/' + patient_id + '/image_proces/eroded/' + str(slice) + '.png'
+    # largest_shape = 'DICOM/' + patient_id + '/image_proces/largest_shape/' + str(slice) + '.png'
+    # checked = 'DICOM/' + patient_id + '/image_proces/checked_axis/' + str(slice) + '.png'
+    # src2 = 'DICOM/' + patient_id + '/image_proces/masks/' + str(slice) + '.png'
+    # final = 'DICOM/' + patient_id + '/image_proces/segement/' + str(slice) + '.png'
     last = 'DICOM/' + patient_id + '/image_proces/tumors/' + str(slice) + '.png'
 
-    paths = [original, croped_image, enhanced_image, threshold_image, eroded_image,
-             largest_shape, checked, src2, final, last]
+    paths = [original, last]
     # pdb.set_trace()
 
     return render(request, 'png.html', {'paths': paths})
@@ -532,8 +535,8 @@ def start(request, patient_id):
     # Tumor Model Weights
 
     deep_model_file = DeepModel.objects.all().last()
-    #model.load_weights('/home/shaker/model-direct-tumor.h5')
-    model.load_weights('/home/shaker/LiverModel.h5')
+    # model.load_weights('/home/shaker/model-direct-tumor.h5')
+    model.load_weights(deep_model_file.tumor_file.path)
 
     # model
     predicted = model.predict(model_in)
@@ -541,7 +544,7 @@ def start(request, patient_id):
     #########################################################################
     # Liver Model Weights
     deep_model_file = DeepModel.objects.all().last()
-    model.load_weights('/home/shaker/LiverModel.h5')
+    model.load_weights(deep_model_file.model_file.path)
 
     # segamted outtput
     predicted2 = model.predict(model_in)
@@ -567,6 +570,9 @@ def start(request, patient_id):
         sent = print_out
     else:
         sent = 'patient have no tumor'
+    # predicted = reverse_resample(predicted, slices)
+    # model_in = reverse_resample(model_in, slices)
+
 
     for img_indx in range(len(predicted) - 1):
         m = predicted[img_indx].reshape(256, 256)
@@ -577,8 +583,21 @@ def start(request, patient_id):
 
         cv2.imwrite(path + '/original/' + str(img_indx) + '.png', cv2.cvtColor(patient_mask, cv2.COLOR_GRAY2RGB))
         cv2.imwrite(path + '/tumors/' + str(img_indx) + '.png', cv2.cvtColor(tumor_mask, cv2.COLOR_GRAY2RGB))
-    # pdb.set_trace()
+    #pdb.set_trace()
     return redirect('deepmodel:get_slice_dl',
                     patient_id=patient_id,
-                    slices_num=len(slices),
+                    slices_num=len(predicted),
                     message=sent)
+
+
+def reverse_resample(image, scan, new_spacing=[1, 1, 1]):
+    # Determine current pixel spacing
+    spacing = map(float, ([scan[0].SliceThickness] + list(scan[0].PixelSpacing)))
+    spacing = np.array(list(spacing))
+    resize_factor = spacing * new_spacing
+    new_real_shape = image.shape * resize_factor
+    new_shape = new_real_shape
+    real_resize_factor = image.shape / new_shape
+    new_spacing = spacing / real_resize_factor
+    image = scipy.ndimage.interpolation.zoom(image, real_resize_factor)
+    return image, new_spacing

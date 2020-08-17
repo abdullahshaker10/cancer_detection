@@ -5,3 +5,5 @@ from django.db import models
 
 class DeepModel(models.Model):
     model_file = models.FileField(upload_to='DICOM/', default="")
+    tumor_file = models.FileField(upload_to='DICOM/', default="")
+

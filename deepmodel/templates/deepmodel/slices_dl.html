@@ -3,14 +3,13 @@
 {% load static %}
 
 {% block content %}
-<h3> {{sent}}</h3>
 
 <form name = "form" action ="" method = "POST" >
         {% csrf_token %}
 
          <div style = "max-width:470px;">
             <center>
-               <input type = "text" style = "margin-left:20%;"
+               <input type = "hidden" style = "margin-left:20%;"
                   placeholder = "enter slice number" name = "slice_num" />
             </center>
          </div>
@@ -24,44 +23,13 @@
             </center>
          </div>
 
-        <div style = "max-width:470px;">
-            <center>
-               <input type = "hidden" value="{{slices_lenght}}" style = "margin-left:20%;"
-                  placeholder = "password" name = "slices_lenght" />
-            </center>
-         </div>
-         <br>
-
-         <div style = "max-width:470px;">
-            <center>
-
-               <button style = "border:0px; background-color:#4285F4; margin-top:8%;
-                  height:35px; width:80%;margin-left:19%;" type = "submit"
-                  value = "Login" >
-                  <strong>Examine</strong>
-               </button>
-
-            </center>
-         </div>
 
       </form>
 <br>
 
-<h2 style="text-align:center">Multiple Slideshows</h2>
+<h2 style="text-align:center">Slideshow</h2>
 
-<p>Slideshow 1:</p>
-<div class="slideshow-container">
-    {% for slice in liver_slices %}
-        <div class="mySlides1">
-            <img src="{% static slice %}" style="width:100%">
-        </div>
-    {% endfor %}
 
-  <a class="prev" onclick="plusSlides(-1, 0)">&#10094;</a>
-  <a class="next" onclick="plusSlides(1, 0)">&#10095;</a>
-</div>
-
-<p>Slideshow 2:</p>
 <div class="slideshow-container">
   {% for slice in tumor_slices %}
         <div class="mySlides2">

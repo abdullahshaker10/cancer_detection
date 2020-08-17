@@ -15,4 +15,4 @@ class SlicesFormdl(forms.Form):
 class DeepModelForm(forms.ModelForm):
     class Meta:
         model = DeepModel
-        fields = ('model_file',)
+        fields = ('model_file', 'tumor_file')
