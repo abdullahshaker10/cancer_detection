@@ -28,7 +28,7 @@ TEMPLATE_DIR_DEEPMODEL = os.path.join(BASE_DIR, 'deepmodel/templates/deepmodel')
 SECRET_KEY = '8lu*6g0lg)9z!ba+a$ehk)xt)x%rxgb$i1&amp;022shmi1jcgihb*'
 #SECRET_KEY = os.environ.get("SECRET_KEY")
 
-DEBUG = False
+DEBUG = True
 #DEBUG = int(os.environ.get("DEBUG", default=0))
 
 # 'DJANGO_ALLOWED_HOSTS' should be a single string of hosts with a space between each.
@@ -151,10 +151,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.0/howto/static-files/
 
 STATIC_URL = '/static/'
+APP_DIR = os.path.join(BASE_DIR, 'deepmodel')
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, "static"),
-    os.path.join(BASE_DIR, "static/DICOM"),
+    os.path.join(APP_DIR, "static"),
+    os.path.join(APP_DIR, "static/DICOM"),
 ]
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
